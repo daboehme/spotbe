@@ -313,6 +313,21 @@ def _getAllDatabaseRuns(dbFilepath: str, lastRead: int):
            , 'RunSetMeta': {'LastReadPosix': runNum}
            }
 
+def _getSpotSqliteDBRuns(dbFilepath: str, lastRead: int):
+    import spotdb.spotsqlitedb as spotdb
+
+    db = spotdb.SpotSQLiteDB(dbFilepath)
+
+    runs = db.extract_run_data(lastRead)
+    metric_info = db.get_metric_attribute_info()
+    global_info = db.get_global_attribute_info()
+
+    return { 
+        'Runs'          : runs,
+        'RunDataMeta'   : metric_info,
+        'RunGlobalMeta' : global_info
+    }
+
 def _getAllCaliRuns(filepath, subpaths):
     import multiprocessing
 
@@ -537,9 +552,10 @@ def getData(args):
     output = {}
 
     # sql database
-    if dataSetKey.endswith(('.yaml', '.sqlite')):
+    if dataSetKey.endswith('.sqlite'):
+        output = _getSpotSqliteDBRuns(dataSetKey, lastRead)
+    elif dataSetKey.endswith('.yaml'):
         output = _getAllDatabaseRuns(dataSetKey, lastRead)
-
     # file directory
     else:
         lastReadTime = float(lastRead)

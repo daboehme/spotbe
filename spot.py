@@ -494,6 +494,15 @@ def _getAllJsonRuns(filepath, subpaths):
            }
 
 
+def _get_sina_data(database, lastRead):
+    sdb = SpotSinaDB(database)
+
+    return { 'Runs': sdb.get_run_data(lastRead),
+             'RunDataMeta': sdb.get_metric_metadata(),
+             'RunGlobalMeta': sdb.get_global_metadata()
+        }
+
+
 def memoryGraph(args):
 
     cali_path = args.cali_filepath
@@ -529,13 +538,6 @@ def update_usage_file(op):
     except:
         pass
 
-def _get_sina_data(database, lastRead):
-    sdb = SpotSinaDB(database)
-
-    return { 'Runs': sdb.get_run_data(lastRead),
-             'RunDataMeta': sdb.get_metric_metadata(),
-             'RunGlobalMeta': sdb.get_global_metadata()
-        }
 
 def getData(args):
     update_usage_file("getData")

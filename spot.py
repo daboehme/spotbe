@@ -6,8 +6,6 @@ import base64, hashlib
 
 from datetime import datetime
 
-from spotdb.sinadb import SpotSinaDB
-
 def get_deploy_dir():
     is_live = 1
     pre_dir = '/usr/gapps/spot/'
@@ -495,7 +493,8 @@ def _getAllJsonRuns(filepath, subpaths):
 
 
 def _get_sina_data(database, lastRead):
-    sdb = SpotSinaDB(database, read_only=True)
+    import spotdb
+    sdb = spotdb.connect(database, read_only=True)
 
     return { 'Runs': sdb.get_run_data(lastRead),
              'RunDataMeta': sdb.get_metric_metadata(),
@@ -611,7 +610,7 @@ def getData(args):
     dataset_key = args.dataSetKey
     last_read = args.lastRead or 0
 
-    db = spotdb.connect(dataset_key)
+    db = spotdb.connect(dataset_key, read_only=True)
 
     runs = [] 
     
@@ -638,7 +637,6 @@ def getData(args):
     }
 
     return json.dump(output, sys.stdout)
-
 
 
 def getRun(runId, db=None):
